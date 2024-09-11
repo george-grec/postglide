@@ -2,7 +2,7 @@ name = "postglide"
 version = "0.1.0"
 target = "javascript"
 
-description = "Gleam bindings to [PGlite](https://pglite.dev/), a WASM build of Postgres for client-side browser applications"
+description = "Gleam bindings to PGlite, a WASM build of Postgres for client-side browser applications"
 licences = ["Apache-2.0"]
 repository = { type = "github", user = "george-grec", repo = "postglide" }
 
