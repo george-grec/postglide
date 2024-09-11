@@ -1,0 +1,11 @@
+name = "postglide"
+version = "0.1.0"
+target = "javascript"
+
+description = "Gleam bindings to [PGlite](https://pglite.dev/), a WASM build of Postgres for client-side browser applications"
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "george-grec", repo = "postglide" }
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+gleam_javascript = ">= 0.12.0 and < 1.0.0"
