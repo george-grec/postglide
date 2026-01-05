@@ -1,4 +1,5 @@
 import gleam/dynamic.{type Dynamic}
+import gleam/dynamic/decode.{type DecodeError}
 import gleam/javascript/array.{type Array}
 import gleam/javascript/promise.{type Promise}
 import gleam/list
@@ -13,6 +14,17 @@ pub type Config {
     debug_level: Int,
     relaxed_durability: Bool,
     username: option.Option(String),
+    extensions: List(String),
+  )
+}
+
+type JSConfig {
+  JSConfig(
+    file_system: FileSystem,
+    debug_level: Int,
+    relaxed_durability: Bool,
+    username: option.Option(String),
+    extensions: Array(String),  
   )
 }
 
@@ -33,7 +45,7 @@ pub type Value
 
 pub type QueryError {
   DatabaseError(message: String)
-  DecodeFailed(List(dynamic.DecodeError))
+  DecodeFailed(List(DecodeError))
 }
 
 pub fn default_config() {
@@ -42,17 +54,34 @@ pub fn default_config() {
     debug_level: 0,
     relaxed_durability: True,
     username: option.None,
+    extensions: [],
   )
 }
 
+pub fn create(config: Config) -> promise.Promise(Connection) {
+    config
+    |> to_js_config
+    |> do_create
+}
+
+fn to_js_config(config: Config) -> JSConfig {
+    JSConfig(
+       file_system: config.file_system,
+       debug_level: config.debug_level,
+       relaxed_durability: config.relaxed_durability,
+       username: config.username,
+       extensions: array.from_list(config.extensions)
+    )
+}
+
 @external(javascript, "./pglite_ffi.mjs", "create")
-pub fn create(with config: Config) -> promise.Promise(Connection)
+fn do_create(with config: JSConfig) -> promise.Promise(Connection)
 
 pub fn query(
   query: String,
   connection: Connection,
   arguments: List(Value),
-  expecting decoder: dynamic.Decoder(t),
+  expecting decoder: fn(Dynamic) -> Result(t, List(DecodeError)),
 ) -> promise.Promise(Result(Results(t), QueryError)) {
   do_query(connection, query, array.from_list(arguments))
   |> promise.map(fn(db_result) {

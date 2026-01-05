@@ -1,4 +1,11 @@
 *.beam
 *.ez
-/build
 erl_crash.dump
+result
+.direnv/
+build/
+out/
+server/priv/static
+**/priv/static/*.mjs
+**/priv/static/*.html
+**/index.html
